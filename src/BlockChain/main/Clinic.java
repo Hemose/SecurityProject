@@ -110,23 +110,23 @@ public class Clinic {
                 String decrypted;
                 try {
                     decrypted = AES.decrypt(s);
+                    System.out.println("Transaction is for this Clinic " + decrypted);
+                    String[] tokens = decrypted.split(delm);
+
+                    long id = Long.parseLong(tokens[0]);
+                    String data = tokens[1];
+                    int nxtID = Integer.parseInt(tokens[2]);
+
+
+                    System.out.println("The patient ID is: " + id + " Data: " + data + " NextBlock: " + nxtID);
+                    if (id != pId)
+                        continue;
+                    records.add(data);
+                    mnId = Math.min(nxtID, mnId);
                 } catch (Exception e) {
-                    continue;
+
                 }
 
-                System.out.println("Transaction is for this Clinic " + decrypted);
-                String[] tokens = decrypted.split(delm);
-
-                long id = Long.parseLong(tokens[0]);
-                String data = tokens[1];
-                int nxtID = Integer.parseInt(tokens[2]);
-
-
-                System.out.println("The patient ID is: " + id + " Data: " + data + " NextBlock: " + nxtID);
-                if (id != pId)
-                    continue;
-                records.add(data);
-                mnId = Math.min(nxtID, mnId);
 
             }
             BlockId = mnId;

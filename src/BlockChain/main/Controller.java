@@ -13,9 +13,10 @@ public class Controller {
     HashMap<Long, PublicKey> clinicKeys;
     private final String delm = "%#@!";
     private static long id;
+    private final int blockSize = 5;
 
     private Controller() throws Exception {
-        blockChain = new BlockChain(3);
+        blockChain = new BlockChain(blockSize);
         clinicKeys = new HashMap<>();
     }
 
@@ -26,8 +27,10 @@ public class Controller {
     }
 
     public boolean checkValidity() throws Exception {
-        if (!blockChain.isChainValid())
-            return false;
+        if (!blockChain.isChainValid()) {
+            throw new Exception("Invalid blockChain");
+//            return false;
+        }
 
         //TODO add checking for the signature for every transaction
         for (int i = 0; i < blockChain.GetSize(); i++) {
@@ -65,7 +68,8 @@ public class Controller {
 
     public ArrayList<String> getBlockData(int id) throws Exception {
         if (!checkValidity()) {
-            return null;
+            throw new Exception("Invalid Block Chain");
+//            return null;
         }
         if (id == blockChain.GetSize())
             blockChain.mineBlock();
@@ -84,12 +88,15 @@ public class Controller {
     // DATA delm CID delm Shashed;
 
     public int addTransaction(String data, long clinicId, String signedHashed) throws Exception {
-        if (!checkValidity())
-            return -1;
+        if (!checkValidity()) {
+            throw new Exception("Invalid Block Chain");
+//            return -1;
+        }
 
         System.out.println("Adding Transaction for Clinic " + clinicId + " Data: " + data + " Hash: " + signedHashed);
         if (!checkSign(data, clinicId, signedHashed)) {
-            return -1; // bad transaction
+            throw new Exception("Invalid block sign for clinic " + clinicId);
+//            return -1; // bad transaction
         }
 
 
@@ -101,7 +108,8 @@ public class Controller {
     }
 
     public boolean checkSign(String data, long clinicId, String signedHashed) throws Exception {
-
+        if (!clinicKeys.containsKey(clinicId))
+            throw new Exception("Non Registered Clinic");
         String Unsigned = decSigned(signedHashed, clinicKeys.get(clinicId));
         String hashed = StringUtil.applySha256(data);
 

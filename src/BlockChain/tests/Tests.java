@@ -96,12 +96,7 @@ class Tests {
 
         for (int i = 0; i < numPatients; i++) {
             patients.add(registerRandomPatient(c1));
-            int recs = getRandom(5);
-            visits.add(new ArrayList<>());
-            for (int j = 0; j < recs; j++) {
-                visits.get(i).add(getRandomRecord());
-                c1.addRecord(patients.get(i).ID(), visits.get(i).get(j));
-            }
+            patientRecords(patients, visits, i, c1);
         }
 
         for (int i = 0; i < numPatients; i++) {
@@ -114,14 +109,19 @@ class Tests {
         }
     }
 
-    @Test
-    public void multiPatientMultiRecordsMultiClinicsSmall() throws Exception {
-//        Clinic c1 = new Clinic("Dr. Ahmed");
-        int numClinics = getRandom(5);
+    private ArrayList<Clinic> genClinics(int numClinics) throws Exception {
         ArrayList<Clinic> clinics = new ArrayList<>();
         for (int i = 0; i < numClinics; i++) {
             clinics.add(new Clinic(getRandomClinic()));
         }
+        return clinics;
+    }
+
+    @Test
+    public void multiPatientMultiRecordsMultiClinicsSmall() throws Exception {
+//        Clinic c1 = new Clinic("Dr. Ahmed");
+        int numClinics = getRandom(5);
+        ArrayList<Clinic> clinics = genClinics(numClinics);
 
         ArrayList<Patient> patients = new ArrayList<>();
         ArrayList<ArrayList<String>> visits = new ArrayList<>();
@@ -133,7 +133,39 @@ class Tests {
             Clinic selected = clinics.get(cId);
             patients.add(registerRandomPatient(selected));
             patientClinic.add(cId);
-            int recs = getRandom(5);
+            patientRecords(patients, visits, i, selected);
+        }
+
+        checkDataValidity(clinics, patients, visits, patientClinic, numPatients);
+    }
+
+    private void patientRecords(ArrayList<Patient> patients, ArrayList<ArrayList<String>> visits, int i, Clinic selected) throws Exception {
+        int recs = getRandom(5);
+        visits.add(new ArrayList<>());
+        for (int j = 0; j < recs; j++) {
+            visits.get(i).add(getRandomRecord());
+            selected.addRecord(patients.get(i).ID(), visits.get(i).get(j));
+        }
+    }
+
+    @Test
+    public void multiPatientMultiRecordsMultiClinicsBig() throws Exception {
+//        Clinic c1 = new Clinic("Dr. Ahmed");
+        int numClinics = getRandom(20);
+        ArrayList<Clinic> clinics = genClinics(numClinics);
+
+
+        ArrayList<Patient> patients = new ArrayList<>();
+        ArrayList<ArrayList<String>> visits = new ArrayList<>();
+        ArrayList<Integer> patientClinic = new ArrayList<>();
+        int numPatients = getRandom(150);
+
+        for (int i = 0; i < numPatients; i++) {
+            int cId = getRandom(numClinics) - 1;
+            Clinic selected = clinics.get(cId);
+            patients.add(registerRandomPatient(selected));
+            patientClinic.add(cId);
+            int recs = getRandom(10);
             visits.add(new ArrayList<>());
             for (int j = 0; j < recs; j++) {
                 visits.get(i).add(getRandomRecord());
@@ -141,6 +173,10 @@ class Tests {
             }
         }
 
+        checkDataValidity(clinics, patients, visits, patientClinic, numPatients);
+    }
+
+    private void checkDataValidity(ArrayList<Clinic> clinics, ArrayList<Patient> patients, ArrayList<ArrayList<String>> visits, ArrayList<Integer> patientClinic, int numPatients) throws Exception {
         for (int i = 0; i < numPatients; i++) {
             Collections.reverse(visits.get(i));
             ArrayList<String> records = clinics.get(patientClinic.get(i)).getPatientList(patients.get(i).ID());
