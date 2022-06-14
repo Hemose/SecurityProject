@@ -9,6 +9,7 @@ Health care records with blockchain
 - org.apache.commons.codec (External Library)
 - Junit 5
 ## How to run
+After installing the required dependinces in addition for org.apache.commons.codec (External Library).
 refer to Test.java in main package in the main method there is an example. And also refer to unit tests in test package with multible tests.
 
 ## Description
