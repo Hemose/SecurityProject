@@ -8,6 +8,8 @@ Health care records with blockchain
 - java 18
 - org.apache.commons.codec (External Library)
 - Junit 5
+## How to run
+refer to Test.java in main package in the main method there is an example. And also refer to unit tests in test package with multible tests.
 
 ## Description
 > ### Main Components
